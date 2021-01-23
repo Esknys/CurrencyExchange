@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Exchange rates</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+    <h1>Exchange rates from Euro to USD</h1>
+    <input type="text" name="Euro" id="Euro" />
+    <input type="submit" value="Get USD rate" name="reg" onclick="calcEurToUsd()" />
+
+    <div class="usd"></div>
+
+    <h1>Exchange rates from Euro to USD on date</h1>
+    <input type="text" name="EuroDate" id="EuroDate" />
+    <input type="date" name="Date" id="Date" />
+    <input type="submit" value="Get USD rate" name="regDate" onclick="calcEurToUsdOnDate()" />
+
+    <div class="date"></div>
+
+    <h1>Euro to USD rate today</h1>
+    <input type="submit" value="Get todays rate" name="todaysRate" onclick="getTodaysRate()" />
+    <div class="rate"></div>
+
+    <div class="error"></div>
+
+    <script>function getTodaysRate() {
+
+            $.getJSON('http://data.fixer.io/api/latest?access_key=d60bb80ec704278f2ecbf9f18e0fdc6b&symbols=USD&format=1', function (data) {
+
+                var latestRate = `${data.rates.USD}`
+
+                var date = `${data.date}`
+
+                const url = "Currency/saveCurrency";
+
+                const currency = {
+                    name: "Usd",
+                    rateEuro: latestRate,
+                    date: date
+                }
+
+                $.post(url, currency, function (OK) {
+                    if (OK) {
+                        window.location.href = 'index.html';
+                    }
+                    else {
+                        $(".error").html("Error in db - try again later");
+
+                    }
+                });
+
+                $(".rate").html("USD rate today on " + date + ": " + latestRate);
+
+            });
+
+        }</script>
+
+</body>
+</html>
